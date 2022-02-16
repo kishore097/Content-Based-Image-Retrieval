@@ -102,12 +102,8 @@ int main (int argc, char *argv[] ){
     int k;
       
     //! [imread] 
-    cv::Mat image_1 = cv::imread("/home/kishore/PRCV/Project_2/olympus/pic.0281.jpg", cv::IMREAD_COLOR);
+    cv::Mat image_1 = cv::imread("/home/kishore/PRCV/Project_2/olympus/pic.0013.jpg", cv::IMREAD_COLOR);
     imshow("original", image_1);
-    Rect R=Rect(100,100,200, 200 );
-    //create a Rect with top-left vertex at (10,20), of width 40 and height 60 pixels.
-
-    rectangle(image_1 ,R,Scalar(0,0,255),1,8,0);
 
 
     Mat blur;
@@ -116,8 +112,7 @@ int main (int argc, char *argv[] ){
     Mat image_3; 
     image_1.copyTo(image_3);
     blurQuantize(blur, image_3, 10);
-    imshow("quantize", image_3); 
-
+    
     
     Mat image_2; 
     image_3.copyTo(image_2);
@@ -127,8 +122,6 @@ int main (int argc, char *argv[] ){
     Mat image;
     image_2.copyTo(image);
     inRange(image_2, Scalar(0, 100, 100), Scalar(10, 255, 255), image);
-
-    imshow("HSV" , image_2);
 
     imshow("threshold", image);
 
@@ -153,7 +146,7 @@ int main (int argc, char *argv[] ){
     // Compute Spatial variance of the binary Image 
     vector<float> vx1; 
     vector<float> vy1;
-    int h = 0;
+    float h = 0;
     for(int i = 0 ;  i < image.rows ; i++){
         for(int j = 0 ; j< image.cols; j++){  
             if(image.at<uchar>(i,j) == 255){
@@ -233,31 +226,57 @@ int main (int argc, char *argv[] ){
     
 /********************************Loop over Database******************************/
 
-    vector<int> vx; 
-    vector<int> vy;
+    
     map<float, string> VM;
  
 
-    for(int k =  0; k < 1106; k++ ){
-        cv::Mat src_1 = cv::imread(path[k], cv::IMREAD_COLOR);
+    for(int k =  0; k < 283; k++ ){
+        cv::Mat src_1 = cv::imread(path[k] , cv::IMREAD_COLOR);
+        vector<float> vx; 
+        vector<float> vy;
+        vector<float> mx; 
+        vector<float> my;
 
+       
+        Mat blur_temp;        
+        src_1.copyTo(blur_temp); 
+        blur5x5(src_1, blur_temp);
+        Mat src_3; 
+        src_1.copyTo(src_3);
+        blurQuantize(blur_temp, src_3, 10);
+       
         Mat src_2; 
-        src_1.copyTo(src_2);
+        src_3.copyTo(src_2);
 
         
-        cvtColor(src_1, src_2, COLOR_BGR2HSV);
+        cvtColor(src_3, src_2, COLOR_BGR2HSV);
 
         Mat src;
         src_2.copyTo(src);
         inRange(src_2, Scalar(0, 100, 100), Scalar(10, 255, 255), src);
-        float l = 0,  dif = 0, var = 0 , std = 0;
-        // imshow(path[k] , src);
-        int v =0;
-        vector<float> vx; 
-        vector<float> vy;
 
-        for(int i = 0 ;  i < image.rows ; i++){
-            for(int j = 0 ; j< image.cols ;j++){  
+        Mat sx_temp  ; 
+        src.copyTo(sx_temp  );                      
+
+        sobelX3x3_1d( src, sx_temp  );
+        
+        Mat sy_temp  ;
+        src.copyTo(sy_temp  ); 
+        sobelY3x3_1d(src, sy_temp  );
+        
+        Mat temp_mag_1;
+        src.copyTo(temp_mag_1);
+        
+        Mat mag_temp  ;
+        magnitude_1d(sx_temp  , sy_temp  , temp_mag_1);
+        convertScaleAbs(temp_mag_1, mag_temp  ); 
+       
+
+        float l = 0; 
+       
+
+        for(int i = 0 ;  i < src.rows ; i++){
+            for(int j = 0 ; j< src.cols ;j++){  
                 if(src.at<uchar>(i,j) == 255){
                     
                     vx.push_back(i);
@@ -273,7 +292,7 @@ int main (int argc, char *argv[] ){
             }
         }
 
-        float a = 0, b = 0, Mi = 0, Mj = 0;
+        float a = 0, b = 0, Mi = 0, Mj = 0,  dif = 0, var = 0 , std = 0;
         for(int i = 0; i < l ; i++ ){
             Mi += vx[i];
             Mj += vy[i];
@@ -290,12 +309,11 @@ int main (int argc, char *argv[] ){
         std = sqrt(var);
 
 
-        vector<float> mx; 
-        vector<float> my;
+        
         int m = 0;
-        for(int i = 0 ;  i < image.rows ; i++){
-            for(int j = 0 ; j< image.cols; j++){  
-                if(src.at<uchar>(i,j) == 255){
+        for(int i = 0 ;  i < mag_temp.rows ; i++){
+            for(int j = 0 ; j< mag_temp.cols; j++){  
+                if(mag_temp.at<uchar>(i,j) == 255){
                     mx.push_back(i);
                     my.push_back(j);
                     m++;
@@ -322,15 +340,16 @@ int main (int argc, char *argv[] ){
 
 
         for(int i = 0; i < m ; i++ ){
-            mvar += (mx[i] - c1) * (mx[i] - c1) + (my[i] - d)* (my[i] - d);
+            mvar += (mx[i] - c) * (mx[i] - c) + (my[i] - d)* (my[i] - d);
 
         }
         mstd = sqrt(mvar);
 
         // New Distance Metric - differences in the spatial variance assign Weights
 
-        dif  = 0.6*(std - std1)*(std - std1) + 0.4*(mstd1 - mstd) * (mstd1 - mstd);
+        dif  = 0.7*(std - std1)*(std - std1) + 0.3*(mstd1 - mstd) * (mstd1 - mstd);
 
+        
 
         VM.insert(pair<float, string>(dif, path[k]));      
 
