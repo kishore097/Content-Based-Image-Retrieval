@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 include_directories(${OpenCV_INCLUDE_DIRS})
-add_executable(CV_PROJECT_2 imgDisp.cpp )
+add_executable(CV_PROJECT_2 extnsn_blue_bins.cpp filter.cpp )
 
 
 # target_link_libraries(CV_PROJECT_2 )
