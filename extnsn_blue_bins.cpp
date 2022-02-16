@@ -186,8 +186,8 @@ int main (int argc, char *argv[] ){
 
     for(int i = 0; i < h ; i++ ){
         var1 += (vx1[i] - a1) * (vx1[i] - a1) + (vy1[i] - b1)* (vy1[i] - b1);
-
     }
+
     std1 = sqrt(var1);
 
 /********************************Loop over Database******************************/
@@ -253,7 +253,7 @@ int main (int argc, char *argv[] ){
         cout  << " dist   : "  << sqrt((h - l) * (h-l))<< "  ." << "  varinace  :  "<< var<< " path  :  "<< path[k]<< endl;
         
 
-        d  = sqrt((h - l) * (h-l)) + (std1 - std) ;
+        d  = ((h - l) * (h-l)) + (std1 - std)*(std1 - std) ;
 
 
         VM.insert(pair<float, string>(d, path[k]));      
