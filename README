@@ -1,3 +1,5 @@
+Note: This is not a late submission ( Approved by the Professor )
+
 CV PROJECT 2 : CONTENT BASED IMAGE RETRIEVAL
 
 This repository contains 7 files. Each file executes the a particular task.
@@ -37,3 +39,4 @@ Since the blue bins are plain without texture, computing magnitude could have re
 Since the bin is located in one place, the spatial variance of the histogram will result in small values. 
 So I have used the sum of squared differences of color histogram and the spatial variance as two features for computing the distance metric.
 This resulted in 8 blue bins/mail boxes in the top 10 results and other blue objects in the top 20.
+Also since the image is converted in to a binary image in the begining itself, the computation time is so much faster.
