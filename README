@@ -1,6 +1,8 @@
-Note: This is not a late submission ( Approved by the Professor )
+# CONTENT BASED IMAGE RETRIEVAL
 
-CV PROJECT 2 : CONTENT BASED IMAGE RETRIEVAL
+The overall task for this project is, given a database of images and a target image, find images in the data with similar content. 
+Instead, will focus on more generic characteristics of the images such as different color spaces, histograms, spatial features, and texture features.
+
 
 This repository contains 7 files. Each file executes the a particular task.
 To execute a particular fille, the file name along with the filter.cpp file should be added in the executable list in the CMakeLists.txt file. 
